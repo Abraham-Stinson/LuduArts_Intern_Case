@@ -13,6 +13,9 @@ namespace GameProject.Runtime
         [Header("Movement")]
         [SerializeField] private CharacterController m_CharacterController;
         [SerializeField, Range(0f, 20f)] private float m_PlayerMovementSpeed = 10f;
+        [Header("Gravity Settings")]
+        [SerializeField] private float m_Gravity = -9.81f;
+        private Vector3 m_VerticalVelocity;
         [Header("Camera and Rotation")]
         [SerializeField] private Transform m_CameraTransform;
         [SerializeField, Range(0f, 100f)] private float m_MouseSensitivity = 10f;
@@ -42,10 +45,24 @@ namespace GameProject.Runtime
 
         private void LateUpdate()
         {
+            HandleGravity();
             HandleRotate();
         }
         #endregion
         #region Methods
+        /// <summary>
+        /// Applies gravity force to the character.
+        /// </summary>
+        private void HandleGravity()
+        {
+            if (m_CharacterController.isGrounded && m_VerticalVelocity.y < 0)
+            {
+                m_VerticalVelocity.y = -2f;
+            }
+            m_VerticalVelocity.y += m_Gravity * Time.deltaTime;
+
+            m_CharacterController.Move(m_VerticalVelocity * Time.deltaTime);
+        }
         /// <summary>
         /// Calculates and implements the character's walking operations.
         /// </summary>
@@ -54,7 +71,7 @@ namespace GameProject.Runtime
             Vector2 moveInput = m_PlayerInputAction.Player.Move.ReadValue<Vector2>();
             Vector3 moveDirection = transform.right * moveInput.x + transform.forward * moveInput.y;
             m_CharacterController.Move(moveDirection * m_PlayerMovementSpeed * Time.deltaTime);
-            Debug.Log($"HandleMovement(): moveDirection: {moveDirection}");
+            //Debug.Log($"HandleMovement(): moveDirection: {moveDirection}");
         }
 
         /// <summary>

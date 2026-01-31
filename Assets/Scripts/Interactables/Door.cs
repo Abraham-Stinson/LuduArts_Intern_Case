@@ -1,4 +1,6 @@
 using GameProject.Runtime.Core;
+using GameProject.Runtime.Player;
+using GameProject.ScriptableObjects;
 using UnityEngine;
 
 namespace GameProject.Runtime.Interactables
@@ -18,19 +20,42 @@ namespace GameProject.Runtime.Interactables
         [Header("Door Status")]
         [SerializeField] private bool m_IsLocked = false;
         [SerializeField] private bool m_IsOpen = false;
+        [SerializeField] private string m_RequestId;
         [Header("Animation Settings")]
         [SerializeField] private Animator m_Animator;
         private static readonly int OpenTrigger = Animator.StringToHash("Open");
         private static readonly int CloseTrigger = Animator.StringToHash("Close");
         #endregion
-
+        #region Unity Methods
+        private void Awake()
+        {
+            if (m_Animator == null)
+            {
+                m_Animator = GetComponent<Animator>();
+            }
+        }
+        #endregion
         #region Methods
         public void Interact()
         {
             if (m_IsLocked)
             {
                 m_UIPromptMessage = m_PromptLocked;
-                //TODO: When a key object is added the unlock event will be added
+                InventoryManager inventory = FindObjectOfType<InventoryManager>();
+                ItemData currentItem = inventory.GetSelectedItem();
+
+                if (currentItem != null && currentItem.ID == m_RequestId)
+                {
+                    m_IsLocked = false;
+                    inventory.RemoveSelectedItem();
+                    Debug.Log("Interact(): Door unlocked");
+                }
+                else
+                {
+                    Debug.Log($"Locked! Requires key: {m_RequestId}");
+                    //UI PROMPT MESSAGE
+                }
+
                 return;
             }
 
