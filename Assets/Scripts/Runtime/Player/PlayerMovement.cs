@@ -7,7 +7,7 @@ namespace GameProject.Runtime
     /// Class that manages player movement and camera rotation.
     /// </summary>
     [RequireComponent(typeof(CharacterController))]
-    public class PlayerMovementScript : MonoBehaviour
+    public class PlayerMovement : MonoBehaviour
     {
         #region Fields
         [Header("Movement")]
