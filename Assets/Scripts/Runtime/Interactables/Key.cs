@@ -1,7 +1,7 @@
 using UnityEngine;
 using GameProject.Runtime.Core;
 using GameProject.Runtime.Player;
-using GameProject.ScriptableObjects;
+using GameProject.Runtime.Data;
 
 namespace GameProject.Runtime.Interactables
 {
@@ -14,8 +14,8 @@ namespace GameProject.Runtime.Interactables
         #region Unity Methods
         #endregion
 
-        #region public Methods for Interactable
-        public void Interact()
+        #region  Interface Methods
+        void IInteractable.Interact()
         {
             InventoryManager inventory = FindObjectOfType<InventoryManager>();
 
@@ -30,12 +30,12 @@ namespace GameProject.Runtime.Interactables
             }
         }
 
-        public string GetInteractionPrompt()
+        string IInteractable.GetInteractionPrompt()
         {
             return $"Pick up {m_ItemData.ItemName}";
         }
 
-        public float GetHoldDuration() => 0f;
+        float IInteractable.GetHoldDuration() => 0f;
         #endregion
     }
 

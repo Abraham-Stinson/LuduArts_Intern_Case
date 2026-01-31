@@ -1,6 +1,6 @@
 using GameProject.Runtime.Core;
 using GameProject.Runtime.Player;
-using GameProject.ScriptableObjects;
+using GameProject.Runtime.Data;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,7 +12,7 @@ namespace GameProject.Runtime.Interactables
     [RequireComponent(typeof(Animator))]
     public class Door : MonoBehaviour, IInteractable
     {
-        #region Field
+        #region Fields
         [Header("UI Prompt")]
 
         [SerializeField] private string m_PromptOpen = "Open Door";
@@ -25,8 +25,8 @@ namespace GameProject.Runtime.Interactables
         [SerializeField] private float m_UnlockDuration = 2f;
         [Header("Animation Settings")]
         [SerializeField] private Animator m_Animator;
-        private static readonly int OpenTrigger = Animator.StringToHash("Open");
-        private static readonly int CloseTrigger = Animator.StringToHash("Close");
+        private static readonly int s_OpenTrigger = Animator.StringToHash("Open");
+        private static readonly int s_CloseTrigger = Animator.StringToHash("Close");
         #endregion
         #region Unity Methods
         private void Awake()
@@ -37,8 +37,36 @@ namespace GameProject.Runtime.Interactables
             }
         }
         #endregion
+
+
+        #region Public Methods
+        /// <summary>
+        /// When you interact with the lever, the door will open.
+        /// </summary>
+        public void ToggleDoor()
+        {
+            if (m_IsLocked)
+            {
+                return;
+            }
+
+            m_IsOpen = !m_IsOpen;
+
+            if (m_IsOpen)//door is close
+            {
+                Debug.Log("Door is opening");
+                m_Animator.SetTrigger(s_OpenTrigger);
+            }
+            else//door is open
+            {
+                Debug.Log("Door is closing");
+                m_Animator.SetTrigger(s_CloseTrigger);
+            }
+        }
+        #endregion
+
         #region Interface Methods
-        public void Interact()
+        void IInteractable.Interact()
         {
             if (m_IsLocked)
             {
@@ -46,6 +74,7 @@ namespace GameProject.Runtime.Interactables
 
                 if (inventory == null)
                 {
+                    Debug.LogWarning("Inventory is null");
                     return;
                 }
 
@@ -61,7 +90,6 @@ namespace GameProject.Runtime.Interactables
                 else
                 {
                     Debug.Log($"Locked! Requires key: {m_RequiredKeyID}");
-                    //UI PROMPT MESSAGE
                 }
 
                 return;
@@ -70,7 +98,7 @@ namespace GameProject.Runtime.Interactables
             ToggleDoor();
 
         }
-        public string GetInteractionPrompt()
+        string IInteractable.GetInteractionPrompt()
         {
             if (m_IsLocked)
             {
@@ -79,32 +107,9 @@ namespace GameProject.Runtime.Interactables
             return m_IsOpen ? m_PromptClose : m_PromptOpen;
         }
 
-        public float GetHoldDuration()
+        float IInteractable.GetHoldDuration()
         {
             return m_IsLocked ? m_UnlockDuration : 0f;
-        }
-        #endregion
-
-        #region Public Methods
-        public void ToggleDoor()
-        {
-            if (m_IsLocked)
-            {
-                return;
-            }
-
-            m_IsOpen = !m_IsOpen;
-
-            if (m_IsOpen)//door is close
-            {
-                Debug.Log("Door is opening");
-                m_Animator.SetTrigger(OpenTrigger);
-            }
-            else//door is open
-            {
-                Debug.Log("Door is closing");
-                m_Animator.SetTrigger(CloseTrigger);
-            }
         }
         #endregion
     }

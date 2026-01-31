@@ -1,6 +1,6 @@
 using GameProject.Runtime.Core;
 using GameProject.Runtime.Player;
-using GameProject.ScriptableObjects;
+using GameProject.Runtime.Data;
 using UnityEngine;
 namespace GameProject.Runtime.Interactables
 {
@@ -16,7 +16,7 @@ namespace GameProject.Runtime.Interactables
         [SerializeField] private ItemData m_ItemToGive;
 
         private Animator m_Animator;
-        private static readonly int OpenTrigger = Animator.StringToHash("Open");
+        private static readonly int s_OpenTrigger = Animator.StringToHash("Open");
         #endregion
 
         #region Unity Methods
@@ -26,32 +26,13 @@ namespace GameProject.Runtime.Interactables
         }
         #endregion
 
-        #region Interface Methods
-        public void Interact()
-        {
-            if (m_IsOpened)
-            {
-                return;
-            }
 
-            OpenChest();
-        }
-        public string GetInteractionPrompt()
-        {
-            return m_IsOpened ? "Empty" : m_PromptMessageToOpen;
-        }
-
-        public float GetHoldDuration()
-        {
-            return m_IsOpened ? 0f : m_HoldInteractDuration;
-        }
-        #endregion
 
         #region Methods
         private void OpenChest()
         {
-            m_IsOpened=true;
-            m_Animator.SetTrigger(OpenTrigger);
+            m_IsOpened = true;
+            m_Animator.SetTrigger(s_OpenTrigger);
 
             if (m_ItemToGive != null)
             {
@@ -61,6 +42,27 @@ namespace GameProject.Runtime.Interactables
                     inventory.AddItem(m_ItemToGive);
                 }
             }
+        }
+        #endregion
+
+        #region Interface Methods
+        void IInteractable.Interact()
+        {
+            if (m_IsOpened)
+            {
+                return;
+            }
+
+            OpenChest();
+        }
+        string IInteractable.GetInteractionPrompt()
+        {
+            return m_IsOpened ? "Empty" : m_PromptMessageToOpen;
+        }
+
+        float IInteractable.GetHoldDuration()
+        {
+            return m_IsOpened ? 0f : m_HoldInteractDuration;
         }
         #endregion
     }

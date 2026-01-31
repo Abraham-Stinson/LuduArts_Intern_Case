@@ -1,4 +1,4 @@
-using GameProject.ScriptableObjects;
+using GameProject.Runtime.Data;
 using UnityEngine;
 using UnityEngine.UI;
 namespace GameProject.Runtime.UI

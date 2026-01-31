@@ -55,6 +55,9 @@ namespace GameProject.Runtime.UI
                 m_PromptMessageText.text = $"[F] {message}";
             }
         }
+        /// <summary>
+        /// to remove unnecessary ui after leaving the interacted object
+        /// </summary>
         public void HidePrompt()
         {
             if (m_PromptMessageGO.activeSelf)
@@ -63,7 +66,9 @@ namespace GameProject.Runtime.UI
             }
 
         }
-
+        /// <summary>
+        /// Show progress in ui for holding interact 
+        /// </summary>
         public void UpdateProgressBar(float fillAmount)
         {
             if (!m_ProgressBarGO.activeSelf)

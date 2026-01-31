@@ -21,8 +21,8 @@ namespace GameProject.Runtime.Interactables
         [SerializeField] private UnityEvent m_OnLeverDeactivated;
 
         private Animator m_Animator;
-        private static readonly int ActiveTrigger = Animator.StringToHash("Active");
-        private static readonly int DeactiveTrigger = Animator.StringToHash("Deactive");
+        private static readonly int s_ActiveTrigger = Animator.StringToHash("Active");
+        private static readonly int s_DeactiveTrigger = Animator.StringToHash("Deactive");
 
         #endregion
 
@@ -34,29 +34,29 @@ namespace GameProject.Runtime.Interactables
         #endregion
 
         #region Interface Methods
-        public void Interact()
+        void IInteractable.Interact()
         {
             m_IsSwitchOn = !m_IsSwitchOn;
 
             if (m_IsSwitchOn)//Switch on
             {
-                m_Animator.SetTrigger(ActiveTrigger);
+                m_Animator.SetTrigger(s_ActiveTrigger);
                 m_OnLeverActivated?.Invoke();
             }
             else //Switch off
             {
-                m_Animator.SetTrigger(DeactiveTrigger);
+                m_Animator.SetTrigger(s_DeactiveTrigger);
                 m_OnLeverDeactivated?.Invoke();
             }
 
         }
 
-        public string GetInteractionPrompt()
+        string IInteractable.GetInteractionPrompt()
         {
             return m_IsSwitchOn ? m_PromptSwitchOn : m_PromptSwitchOff;
         }
 
-        public float GetHoldDuration() => 0f;
+        float IInteractable.GetHoldDuration() => 0f;
         #endregion
     }
 }

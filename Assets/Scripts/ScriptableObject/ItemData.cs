@@ -1,5 +1,5 @@
 using UnityEngine;
-namespace GameProject.ScriptableObjects
+namespace GameProject.Runtime.Data
 {
     [CreateAssetMenu(fileName = "NewItem",menuName ="Game/Item Data")]
     public class ItemData : ScriptableObject

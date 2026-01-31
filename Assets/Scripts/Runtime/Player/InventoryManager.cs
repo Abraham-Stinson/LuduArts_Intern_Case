@@ -1,8 +1,10 @@
 using System.Collections.Generic;
-using GameProject.ScriptableObjects;
+using GameProject.Runtime.Data;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using GameProject.Runtime.UI;
+using GameProject.Runtime.Data;
+using System;
 
 namespace GameProject.Runtime.Player
 {
@@ -59,6 +61,10 @@ namespace GameProject.Runtime.Player
         #endregion
 
         #region Public Methods for Interaction System
+
+        /// <summary>
+        /// Add items to inventory
+        /// </summary>
         public bool AddItem(ItemData item)
         {
             if (m_InventorySlots.Count >= m_MaxSlot)
@@ -196,6 +202,7 @@ namespace GameProject.Runtime.Player
             }
 
         }
+
         #endregion
     }
 }

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using GameProject.ScriptableObjects;
+using GameProject.Runtime.Data;
 namespace GameProject.Runtime.UI
 {
     public class InventoryUI : MonoBehaviour
