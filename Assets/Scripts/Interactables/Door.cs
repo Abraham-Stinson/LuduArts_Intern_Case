@@ -20,7 +20,8 @@ namespace GameProject.Runtime.Interactables
         [Header("Door Status")]
         [SerializeField] private bool m_IsLocked = false;
         [SerializeField] private bool m_IsOpen = false;
-        [SerializeField] private string m_RequestId;
+        [SerializeField] private string m_RequiredKeyID;
+        [SerializeField] private float m_UnlockDuration = 2f;
         [Header("Animation Settings")]
         [SerializeField] private Animator m_Animator;
         private static readonly int OpenTrigger = Animator.StringToHash("Open");
@@ -35,24 +36,31 @@ namespace GameProject.Runtime.Interactables
             }
         }
         #endregion
-        #region Methods
+        #region Interface Methods
         public void Interact()
         {
             if (m_IsLocked)
             {
                 m_UIPromptMessage = m_PromptLocked;
                 InventoryManager inventory = FindObjectOfType<InventoryManager>();
+
+                if (inventory == null)
+                {
+                    return;
+                }
+
                 ItemData currentItem = inventory.GetSelectedItem();
 
-                if (currentItem != null && currentItem.ID == m_RequestId)
+                if (currentItem != null && currentItem.ID == m_RequiredKeyID)
                 {
                     m_IsLocked = false;
                     inventory.RemoveSelectedItem();
                     Debug.Log("Interact(): Door unlocked");
+                    //TODO UNLOCK SOUND
                 }
                 else
                 {
-                    Debug.Log($"Locked! Requires key: {m_RequestId}");
+                    Debug.Log($"Locked! Requires key: {m_RequiredKeyID}");
                     //UI PROMPT MESSAGE
                 }
 
@@ -80,6 +88,11 @@ namespace GameProject.Runtime.Interactables
                 return m_PromptLocked;
             }
             return m_IsOpen ? m_PromptClose : m_PromptOpen;
+        }
+
+        public float GetHoldDuration()
+        {
+            return m_IsLocked ? m_UnlockDuration : 0f;
         }
         #endregion
     }

@@ -15,5 +15,9 @@ namespace GameProject.Runtime.Core
         /// Returns the interaction text to be displayed on the UI (Ex: "Open Door").
         /// </summary>
         string GetInteractionPrompt();
+        /// <summary>
+        /// Can interact by pressing and holding (Ex: "Unlocking Door, Opening Chest").
+        /// </summary>
+        float GetHoldDuration();
     }
 }

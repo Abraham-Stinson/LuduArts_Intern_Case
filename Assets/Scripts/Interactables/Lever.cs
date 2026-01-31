@@ -48,13 +48,15 @@ namespace GameProject.Runtime.Interactables
                 m_Animator.SetTrigger(DeactiveTrigger);
                 m_OnLeverDeactivated?.Invoke();
             }
-            
+
         }
-        
+
         public string GetInteractionPrompt()
         {
             return m_IsSwitchOn ? m_PromptSwitchOn : m_PromptSwitchOff;
         }
+
+        public float GetHoldDuration() => 0f;
         #endregion
     }
 }

@@ -16,6 +16,7 @@ namespace GameProject.Runtime
         [SerializeField, Range(1f, 10f)] private float m_InteractionRange = 3f;
         [SerializeField] private LayerMask m_InteractableLayer;
         [SerializeField] private InputActionReference m_InteractInputReference;
+        private float m_CurrentHoldTimer = 0f;
 
         private IInteractable m_CurrentInteractable;
         #endregion
@@ -28,19 +29,18 @@ namespace GameProject.Runtime
                 return;
             }
             m_InteractInputReference.action.Enable();
-            m_InteractInputReference.action.performed += OnInteract;
         }
         private void OnDisable()
         {
             if (m_InteractInputReference != null)
             {
-                m_InteractInputReference.action.performed -= OnInteract;
                 m_InteractInputReference.action.Disable();
             }
         }
         private void Update()
         {
             CheckForInteractable();
+            HandleInteractionInput();
         }
         #endregion
         #region Methods
@@ -63,12 +63,51 @@ namespace GameProject.Runtime
             }
             m_CurrentInteractable = null;
         }
-        private void OnInteract(InputAction.CallbackContext context)
+
+        private void HandleInteractionInput()
         {
-            if (m_CurrentInteractable != null)
+            if (m_CurrentInteractable == null)
             {
-                m_CurrentInteractable.Interact();
-                Debug.Log($"OnInteract(): Interacted");
+                m_CurrentHoldTimer = 0f;
+                //TODO UI Progress 
+                return;
+            }
+
+            bool isPressed = m_InteractInputReference.action.IsPressed();
+
+            if (isPressed)
+            {
+                float requiredTime = m_CurrentInteractable.GetHoldDuration();
+                
+                if (requiredTime <= 0f)
+                {
+                    // Sadece tuşa İLK basıldığı kare çalışır
+                    if (m_InteractInputReference.action.WasPressedThisFrame())
+                    {
+                        m_CurrentInteractable.Interact();
+                    }
+                }
+                else
+                {
+                    m_CurrentHoldTimer += Time.deltaTime;
+
+                    float progress = Mathf.Clamp01(m_CurrentHoldTimer / requiredTime);
+                    Debug.Log($"Holding... %{progress * 100:F0}");
+                    // TODO: UI Bar Update (fillAmount = progress)
+
+                    // Süre doldu mu?
+                    if (m_CurrentHoldTimer >= requiredTime)
+                    {
+                        m_CurrentInteractable.Interact();
+                        m_CurrentHoldTimer = 0f;
+                        // TODO: UI Progress Set Active False
+                    }
+                }
+            }
+            else
+            {
+                m_CurrentHoldTimer = 0f;
+                // TODO: UI Progress Set Active False
             }
         }
         #endregion

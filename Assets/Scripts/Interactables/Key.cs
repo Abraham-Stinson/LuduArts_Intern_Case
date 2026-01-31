@@ -34,6 +34,8 @@ namespace GameProject.Runtime.Interactables
         {
             return $"Pick up {m_ItemData.ItemName}";
         }
+
+        public float GetHoldDuration() => 0f;
         #endregion
     }
 
