@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using GameProject.ScriptableObjects;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using GameProject.Runtime.UI;
 
 namespace GameProject.Runtime.Player
 {
@@ -20,6 +21,9 @@ namespace GameProject.Runtime.Player
         [SerializeField] private InputActionReference m_ScrollInput;
         [SerializeField] private InputActionReference m_DropInput;
 
+        [Header("UI References")]
+        [SerializeField] private InventoryUI m_InventoryUI;
+
         //Inventory
         private List<ItemData> m_InventorySlots = new List<ItemData>();
         private int m_CurrentInventorySlotIndex = 0;
@@ -27,6 +31,14 @@ namespace GameProject.Runtime.Player
         #endregion
 
         #region Unity Methods
+        private void Start()
+        {
+            if (m_InventoryUI != null)
+            {
+                m_InventoryUI.UpdateUI(m_InventorySlots, m_CurrentInventorySlotIndex);
+            }
+
+        }
         private void OnEnable()
         {
             m_ScrollInput.action.Enable();
@@ -56,6 +68,11 @@ namespace GameProject.Runtime.Player
             }
 
             m_InventorySlots.Add(item);
+
+            if (m_InventoryUI != null)
+            {
+                m_InventoryUI.UpdateUI(m_InventorySlots, m_CurrentInventorySlotIndex);
+            }
 
             //Change visual of item
             if (m_InventorySlots.Count - 1 == m_CurrentInventorySlotIndex)
@@ -90,6 +107,11 @@ namespace GameProject.Runtime.Player
                     m_CurrentInventorySlotIndex = Mathf.Max(0, m_InventorySlots.Count - 1);
                 }
 
+                if (m_InventoryUI != null)
+                {
+                    m_InventoryUI.UpdateUI(m_InventorySlots, m_CurrentInventorySlotIndex);
+                }
+
                 UpdateHandVisualItem();
             }
         }
@@ -118,6 +140,11 @@ namespace GameProject.Runtime.Player
                 {
                     m_CurrentInventorySlotIndex = m_InventorySlots.Count - 1;
                 }
+            }
+
+            if (m_InventoryUI != null)
+            {
+                m_InventoryUI.UpdateUI(m_InventorySlots, m_CurrentInventorySlotIndex);
             }
 
             UpdateHandVisualItem();

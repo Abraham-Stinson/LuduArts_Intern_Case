@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 4715687975189077794}
   - component: {fileID: 599330311966617975}
   m_Layer: 3
-  m_Name: P_Door_01
+  m_Name: P_Blue_Door_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -67,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e916c36198b3f0a4881125801e0536a5, type: 2}
+  - {fileID: 2100000, guid: 407d225781957db4487a3002f0eeac47, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -126,9 +126,10 @@ MonoBehaviour:
   m_PromptOpen: Open Door
   m_PromptClose: Close Door
   m_PromptLocked: Locked (Req. Key)
-  m_IsLocked: 0
+  m_IsLocked: 1
   m_IsOpen: 0
-  m_RequestId: 
+  m_RequiredKeyID: BlueKey01
+  m_UnlockDuration: 2
   m_Animator: {fileID: 9017174529796602}
 --- !u!65 &599330311966617975
 BoxCollider:

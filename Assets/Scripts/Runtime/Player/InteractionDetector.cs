@@ -1,4 +1,5 @@
 using GameProject.Runtime.Core;
+using GameProject.Runtime.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -57,11 +58,12 @@ namespace GameProject.Runtime
                 if (interactable != null)
                 {
                     m_CurrentInteractable = interactable;
-                    //TODO: UI MESSAGE WILL BE ADD
+                    UIManager.Instance.SetPromptText(interactable.GetInteractionPrompt());
                     return;
                 }
             }
             m_CurrentInteractable = null;
+            UIManager.Instance.HidePrompt();
         }
 
         private void HandleInteractionInput()
@@ -69,7 +71,7 @@ namespace GameProject.Runtime
             if (m_CurrentInteractable == null)
             {
                 m_CurrentHoldTimer = 0f;
-                //TODO UI Progress 
+                UIManager.Instance.HideProgressBar();
                 return;
             }
 
@@ -78,10 +80,9 @@ namespace GameProject.Runtime
             if (isPressed)
             {
                 float requiredTime = m_CurrentInteractable.GetHoldDuration();
-                
+
                 if (requiredTime <= 0f)
                 {
-                    // Sadece tuşa İLK basıldığı kare çalışır
                     if (m_InteractInputReference.action.WasPressedThisFrame())
                     {
                         m_CurrentInteractable.Interact();
@@ -93,21 +94,20 @@ namespace GameProject.Runtime
 
                     float progress = Mathf.Clamp01(m_CurrentHoldTimer / requiredTime);
                     Debug.Log($"Holding... %{progress * 100:F0}");
-                    // TODO: UI Bar Update (fillAmount = progress)
 
-                    // Süre doldu mu?
+                    UIManager.Instance.UpdateProgressBar(progress);
                     if (m_CurrentHoldTimer >= requiredTime)
                     {
                         m_CurrentInteractable.Interact();
                         m_CurrentHoldTimer = 0f;
-                        // TODO: UI Progress Set Active False
+                        UIManager.Instance.HideProgressBar();
                     }
                 }
             }
             else
             {
                 m_CurrentHoldTimer = 0f;
-                // TODO: UI Progress Set Active False
+                UIManager.Instance.HideProgressBar();
             }
         }
         #endregion

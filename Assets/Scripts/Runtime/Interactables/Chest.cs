@@ -1,7 +1,6 @@
 using GameProject.Runtime.Core;
 using GameProject.Runtime.Player;
 using GameProject.ScriptableObjects;
-using Unity.VisualScripting;
 using UnityEngine;
 namespace GameProject.Runtime.Interactables
 {

@@ -2,6 +2,7 @@ using GameProject.Runtime.Core;
 using GameProject.Runtime.Player;
 using GameProject.ScriptableObjects;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace GameProject.Runtime.Interactables
 {
@@ -13,7 +14,7 @@ namespace GameProject.Runtime.Interactables
     {
         #region Field
         [Header("UI Prompt")]
-        private string m_UIPromptMessage;
+
         [SerializeField] private string m_PromptOpen = "Open Door";
         [SerializeField] private string m_PromptClose = "Close Door";
         [SerializeField] private string m_PromptLocked = "Locked (Req. Key)";
@@ -41,7 +42,6 @@ namespace GameProject.Runtime.Interactables
         {
             if (m_IsLocked)
             {
-                m_UIPromptMessage = m_PromptLocked;
                 InventoryManager inventory = FindObjectOfType<InventoryManager>();
 
                 if (inventory == null)
@@ -67,18 +67,7 @@ namespace GameProject.Runtime.Interactables
                 return;
             }
 
-            m_IsOpen = !m_IsOpen;
-
-            if (m_IsOpen)//door is close
-            {
-                Debug.Log("Door is opening");
-                m_Animator.SetTrigger(OpenTrigger);
-            }
-            else//door is open
-            {
-                Debug.Log("Door is closing");
-                m_Animator.SetTrigger(CloseTrigger);
-            }
+            ToggleDoor();
 
         }
         public string GetInteractionPrompt()
@@ -93,6 +82,29 @@ namespace GameProject.Runtime.Interactables
         public float GetHoldDuration()
         {
             return m_IsLocked ? m_UnlockDuration : 0f;
+        }
+        #endregion
+
+        #region Public Methods
+        public void ToggleDoor()
+        {
+            if (m_IsLocked)
+            {
+                return;
+            }
+
+            m_IsOpen = !m_IsOpen;
+
+            if (m_IsOpen)//door is close
+            {
+                Debug.Log("Door is opening");
+                m_Animator.SetTrigger(OpenTrigger);
+            }
+            else//door is open
+            {
+                Debug.Log("Door is closing");
+                m_Animator.SetTrigger(CloseTrigger);
+            }
         }
         #endregion
     }
