@@ -15,9 +15,8 @@ namespace GameProject.Runtime.Interactables
         #endregion
 
         #region  Interface Methods
-        void IInteractable.Interact()
+        void IInteractable.Interact(InventoryManager inventory)
         {
-            InventoryManager inventory = FindObjectOfType<InventoryManager>();
 
             if (inventory != null)
             {

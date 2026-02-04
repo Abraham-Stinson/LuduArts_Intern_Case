@@ -2,7 +2,7 @@ using GameProject.Runtime.Core;
 using GameProject.Runtime.Player;
 using GameProject.Runtime.Data;
 using UnityEngine;
-using UnityEngine.UI;
+using GameProject.Runtime.Audio;
 
 namespace GameProject.Runtime.Interactables
 {
@@ -27,6 +27,10 @@ namespace GameProject.Runtime.Interactables
         [SerializeField] private Animator m_Animator;
         private static readonly int s_OpenTrigger = Animator.StringToHash("Open");
         private static readonly int s_CloseTrigger = Animator.StringToHash("Close");
+        [Header("Audio")]
+        [SerializeField] private AudioClip m_OpenSFX;
+        [SerializeField] private AudioClip m_CloseSFX;
+        [SerializeField] private AudioClip m_UnlockSFX;
         #endregion
         #region Unity Methods
         private void Awake()
@@ -56,21 +60,22 @@ namespace GameProject.Runtime.Interactables
             {
                 Debug.Log("Door is opening");
                 m_Animator.SetTrigger(s_OpenTrigger);
+                AudioManager.Instance.PlaySFX(m_OpenSFX);
             }
             else//door is open
             {
                 Debug.Log("Door is closing");
                 m_Animator.SetTrigger(s_CloseTrigger);
+                AudioManager.Instance.PlaySFX(m_UnlockSFX);
             }
         }
         #endregion
 
         #region Interface Methods
-        void IInteractable.Interact()
+        void IInteractable.Interact(InventoryManager inventory)
         {
             if (m_IsLocked)
             {
-                InventoryManager inventory = FindObjectOfType<InventoryManager>();
 
                 if (inventory == null)
                 {
@@ -85,7 +90,7 @@ namespace GameProject.Runtime.Interactables
                     m_IsLocked = false;
                     inventory.RemoveSelectedItem();
                     Debug.Log("Interact(): Door unlocked");
-                    //TODO UNLOCK SOUND
+                    AudioManager.Instance.PlaySFX(m_CloseSFX);
                 }
                 else
                 {

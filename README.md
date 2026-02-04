@@ -1,15 +1,48 @@
+# 🚀 Case Revizesi ve Güncellemeler (Post-Feedback)
+
+İlk gönderim sonrası alınan teknik geri bildirimler doğrultusunda proje; Ludu Arts mimari standartlarına tam uyum sağlamak ve eksik isterleri tamamlamak amacıyla güncellenmiştir.
+
+### 🛠️ 1. Mimari Refactor: Dependency Injection
+
+**Yapılan İşlem:** `FindObjectOfType` kullanımı kaldırılarak "Tight Coupling" (Sıkı Bağlılık) önlendi.
+
+- **Uygulama:** `IInteractable` arayüzü, **Method Injection** yöntemini destekleyecek şekilde güncellendi.
+- **Nasıl Çalışıyor:** Etkileşim anında `InteractionDetector`, elindeki `InventoryManager` referansını doğrudan etkileşime girilen nesneye (Kapı, Sandık vb.) parametre olarak gönderir.
+- **Sonuç:** Sahne tarama maliyeti ($O(N)$) ortadan kalktı ($O(1)$) ve nesnelerin sahne hiyerarşisine olan bağımlılığı sıfırlandı.
+
+### 📝 2. Kritik Düzeltme: PROMPTS.md
+
+**Yapılan İşlem:** Dosya isimlendirmesi düzeltildi.
+
+- **Düzeltme:** Önceki gönderimde `PROMPTS_TEMPLATE.md` ismiyle kalan dosya, case isterlerine uygun olarak **`PROMPTS.md`** şeklinde yeniden adlandırıldı.
+- **İçerik:** Geliştirme sürecindeki LLM kullanımı ve prompt geçmişi şeffaf bir şekilde dokümante edildi.
+
+### 🔊 3. Ses Entegrasyonu (Audio)
+
+**Yapılan İşlem:** Eksik olan ses sistemi tamamlandı.
+
+- **Uygulama:** Singleton desenine sahip merkezi bir `AudioManager` entegre edildi.
+- **Özellikler:** Aşağıdaki etkileşimlere özel ses efektleri (SFX) eklendi:
+  - Kapı (Açılma, Kapanma, Kilit Açma)
+  - Sandık (Açılma)
+  - Anahtar (Toplama)
+  - Şalter (Açma/Kapama)
+  - Envanter (Eşya Bırakma)
+
+---
+
 # Interaction System - İbrahim Gümüşdal
 
 > Ludu Arts Unity Developer Intern Case
 
 ## Proje Bilgileri
 
-| Bilgi            | Değer          |
-| ---------------- | -------------- |
-| Unity Versiyonu  | 6000.0.23f1    |
-| Render Pipeline  | Built-in / URP |
-| Case Süresi      | 12 saat        |
-| Tamamlanma Oranı | %100           |
+| Bilgi            | Değer            |
+| ---------------- | ---------------- |
+| Unity Versiyonu  | 6000.0.23f1      |
+| Render Pipeline  | Built-in / URP   |
+| Case Süresi      | 12 saat + Revize |
+| Tamamlanma Oranı | %100             |
 
 ---
 
@@ -88,7 +121,7 @@ Interaction System Yapısı
 Sistem, modülerlik ve düşük bağımlılık (decoupling) prensipleri üzerine inşa edilmiştir. Temel yapı üç ana bileşenden oluşmaktadır:
 
 1. Core Interface (Arayüz Katmanı)
-Sistemin merkezinde IInteractable arayüzü yer alır. Bu arayüz, dünyadaki etkileşime geçilebilir tüm nesnelerin uyması gereken standart protokolü tanımlar:
+   Sistemin merkezinde IInteractable arayüzü yer alır. Bu arayüz, dünyadaki etkileşime geçilebilir tüm nesnelerin uyması gereken standart protokolü tanımlar:
 
 Interact(): Etkileşim tetiklendiğinde çalışacak ana mantık.
 
@@ -97,7 +130,7 @@ GetInteractionPrompt(): Kullanıcı arayüzünde (UI) gösterilecek dinamik metn
 GetHoldDuration(): Etkileşimin anlık mı yoksa basılı tutarak mı (Hold) gerçekleşeceğini belirleyen süre değerini döndürür.
 
 2. Detection & Logic (Algılama Mekanizması)
-Oyuncu üzerindeki InteractionDetector bileşeni, etkileşim sürecini yöneten "beyin" görevi görür:
+   Oyuncu üzerindeki InteractionDetector bileşeni, etkileşim sürecini yöneten "beyin" görevi görür:
 
 Raycast Algılama: Her karede (Update) kameranın merkezinden ileriye doğru bir Physics.Raycast atılarak m_InteractableLayer katmanındaki nesneler taranır.
 
@@ -110,7 +143,7 @@ Anlık (Instant): GetHoldDuration() değeri 0 veya daha küçükse, tuşa basıl
 Basılı Tutma (Hold): Belirlenen süre boyunca tuşa basılması durumunda m_CurrentHoldTimer üzerinden ilerleme hesaplanır ve süre tamamlandığında Interact() çağrılır.
 
 3. Concrete Interactables (Nesne Uygulamaları)
-Farklı nesne türleri, IInteractable arayüzünü kendi ihtiyaçlarına göre Explicit olarak uygular:
+   Farklı nesne türleri, IInteractable arayüzünü kendi ihtiyaçlarına göre Explicit olarak uygular:
 
 Door (Kapı): Kilitli (m_IsLocked) ve açık/kapalı durumlarını yönetir. Kilitli kapılar için InventoryManager üzerinden doğru anahtar ID'sine (m_RequiredKeyID) sahip olup olmadığını kontrol eder ve etkileşimi "Hold" tipinde (kilit açma süresi) gerçekleştirir.
 
@@ -121,11 +154,12 @@ Key (Anahtar): Anlık etkileşimle toplanır ve ItemData bilgisini InventoryMana
 Lever (Kol): UnityEvent yapısını kullanarak, etkileşim sonucunda sahnede atanmış olan diğer nesneleri (kapılar, ışıklar vb.) tetikleyen bir "Toggle" anahtarı işlevi görür.
 
 4. UI Feedback & Görsel Geri Bildirim
-Etkileşim sistemi, oyuncuya anlık bilgi aktarmak için UIManager ile entegre çalışır:
+   Etkileşim sistemi, oyuncuya anlık bilgi aktarmak için UIManager ile entegre çalışır:
 
 Dinamik Prompt: Algılanan nesneden gelen metin SetPromptText() ile ekrana yazdırılır.
 
 Progress Bar: Basılı tutma gerektiren etkileşimlerde ilerleme yüzdesi UpdateProgressBar() ile görselleştirilir.
+
 ```
 Mimari Açıklama (Metinsel)
 Proje, Decoupled (Ayrık) bir mimari üzerine kurulmuştur. Bu sayede sistem bileşenleri birbirine sıkı sıkıya bağlı (tightly coupled) değildir. Etkileşim süreci şu katmanlar üzerinden gerçekleşir:
@@ -184,70 +218,69 @@ InventoryManager sadece veri saklamadan sorumludur.
 
 UIManager sadece görsel geri bildirimden sorumludur.
 
-
 **Trade-off'lar:**
 
 Trade-off'lar (Avantaj ve Dezavantajlar)
 Bu projenin mimarisi tasarlanırken, uzun vadeli sürdürülebilirlik ve performans hedeflenmiş; ancak bu hedeflere ulaşmak için bazı teknik ödünler verilmiştir:
 
 1. Interface ve Explicit Implementation Kullanımı
-Avantajlar: InteractionDetector ve etkileşimli nesneler arasındaki bağımlılığı (coupling) minimize eder. Kodun okunabilirliğini artırır ve nesnelerin ana işlevleri ile etkileşim mantığını birbirinden ayırır.
+   Avantajlar: InteractionDetector ve etkileşimli nesneler arasındaki bağımlılığı (coupling) minimize eder. Kodun okunabilirliğini artırır ve nesnelerin ana işlevleri ile etkileşim mantığını birbirinden ayırır.
 
 Dezavantaj (Trade-off): Basit bir "Public Method" kullanımına kıyasla daha fazla "boilerplate" (kalıp) kod yazılmasını gerektirir. Nesne referanslarını kod içinde interface olarak cast etmek (tür dönüşümü yapmak), çok büyük ölçekli sahnelerde mikro düzeyde performans maliyeti oluşturabilir.
 
 2. ScriptableObject Tabanlı Veri Yönetimi
-Avantajlar: Veriyi koddan ayırarak "Data-Driven" bir yapı sunar; tasarımcıların kod değiştirmeden yeni eşyalar oluşturmasına olanak tanır. Bellek yönetimi açısından verimlidir (Flyweight Pattern).
+   Avantajlar: Veriyi koddan ayırarak "Data-Driven" bir yapı sunar; tasarımcıların kod değiştirmeden yeni eşyalar oluşturmasına olanak tanır. Bellek yönetimi açısından verimlidir (Flyweight Pattern).
 
 Dezavantaj (Trade-off): Proje büyüdükçe çok sayıda asset dosyasının yönetilmesini (isimlendirme standartları, klasörleme) zorunlu kılar. Çalışma zamanında (runtime) bu verilerin kalıcı olarak değiştirilmesi, Unity'nin SO yapısı nedeniyle ek sistemler (Save/Load) gerektirir.
 
 3. Singleton Pattern (Managers)
-Avantajlar: UIManager ve AudioManager gibi sistemlere sahneler arası kolay erişim sağlar ve merkezi bir kontrol noktası sunar.
+   Avantajlar: UIManager ve AudioManager gibi sistemlere sahneler arası kolay erişim sağlar ve merkezi bir kontrol noktası sunar.
 
 Dezavantaj (Trade-off): Birim testlerin (Unit Tests) yapılmasını zorlaştırabilir çünkü sistemler birbirine gizli bağımlılıklarla bağlanır. Global durum (Global State) yönetimi dikkatli yapılmazsa hata ayıklama (debugging) sürecini zorlaştırabilir.
 
 4. UnityEvents ve Hashing Mekanizmaları
-Avantajlar: Lever sistemi gibi yapılarda esneklik sağlar ve string bazlı animator erişimlerini optimize ederek işlemci yükünü azaltır.
+   Avantajlar: Lever sistemi gibi yapılarda esneklik sağlar ve string bazlı animator erişimlerini optimize ederek işlemci yükünü azaltır.
 
 Dezavantaj (Trade-off): Çok fazla UnityEvent kullanımı, projenin mantık akışını (logic flow) sadece koda bakarak takip etmeyi zorlaştırır; editör içindeki bağlantıların takibi önem kazanır. Hashing kullanımı ise statik değişkenlerin yönetiminde ekstra dikkat gerektirir.
 
 5. Yeni Input System Entegrasyonu
-Avantajlar: Girdi yönetimini modern, olay tabanlı (event-based) ve çok platformlu bir yapıya kavuşturur.
+   Avantajlar: Girdi yönetimini modern, olay tabanlı (event-based) ve çok platformlu bir yapıya kavuşturur.
 
 Dezavantaj (Trade-off): Eski Input Manager'a göre öğrenme eğrisi daha yüksektir ve basit prototipler için başlangıçta daha fazla kurulum süresi gerektirir.
 
 ### Kullanılan Design Patterns
 
-| Pattern    | Kullanım Yeri  | Neden      |
-| ---------- | -------------- | ---------- |
-| Interface  | IInteractable ve InteractionDetector | InteractionDetector'ın nesne türünü bilmeden farklı IInteractable objeleriyle (Door, Key vb.) iletişim kurmasını sağlayarak sistemler arası bağımlılığı (coupling) minimize eder. |
-| Observer   | Lever (UnityEvents) ve Inventory/UI Entegrasyonu  | Nesnelerin doğrudan birbirine referans vermesi yerine, olay tabanlı tetiklemelerle (Örn: Kol çekildiğinde kapının açılması) sistemlerin birbirinden bağımsız çalışmasına olanak tanır. |
-| Singleton  | UIManager      | Oyun genelinde sıkça erişilen merkezi sistemlere tek bir noktadan (Instance) kolay ve hızlı erişim sağlar.|
-| State  | Door, Chest ve Lever Durum Yönetimi   |Nesnelerin mevcut durumlarına (Açık, Kapalı, Kilitli) göre farklı davranışlar (Animasyon tetikleme, UI Prompt değişimi) sergilemesini profesyonelce yönetir.
-| Flyweight  | ScriptableObject (ItemData)   |Ortak verilerin (isim, ID, ikon) her nesne örneği için bellekte tekrar tekrar oluşturulması yerine tek bir asset üzerinden paylaşılmasını sağlayarak bellek kullanımını optimize eder.
+| Pattern   | Kullanım Yeri                                    | Neden                                                                                                                                                                                  |
+| --------- | ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Interface | IInteractable ve InteractionDetector             | InteractionDetector'ın nesne türünü bilmeden farklı IInteractable objeleriyle (Door, Key vb.) iletişim kurmasını sağlayarak sistemler arası bağımlılığı (coupling) minimize eder.      |
+| Observer  | Lever (UnityEvents) ve Inventory/UI Entegrasyonu | Nesnelerin doğrudan birbirine referans vermesi yerine, olay tabanlı tetiklemelerle (Örn: Kol çekildiğinde kapının açılması) sistemlerin birbirinden bağımsız çalışmasına olanak tanır. |
+| Singleton | UIManager                                        | Oyun genelinde sıkça erişilen merkezi sistemlere tek bir noktadan (Instance) kolay ve hızlı erişim sağlar.                                                                             |
+| State     | Door, Chest ve Lever Durum Yönetimi              | Nesnelerin mevcut durumlarına (Açık, Kapalı, Kilitli) göre farklı davranışlar (Animasyon tetikleme, UI Prompt değişimi) sergilemesini profesyonelce yönetir.                           |
+| Flyweight | ScriptableObject (ItemData)                      | Ortak verilerin (isim, ID, ikon) her nesne örneği için bellekte tekrar tekrar oluşturulması yerine tek bir asset üzerinden paylaşılmasını sağlayarak bellek kullanımını optimize eder. |
 
 ## Ludu Arts Standartlarına Uyum
 
 ### C# Coding Conventions
 
-| Kural                       | Uygulandı | Notlar |
-| --------------------------- | --------- | ------ |
-| m\_ prefix (private fields) | [x] / [ ] |Tüm sınıflarda (Door, InventoryManager, PlayerMovement vb.) private instance field'lar için tutarlı şekilde uygulandı.|
-| s\_ prefix (private static) | [x] / [ ] |Animator hash değerleri gibi static field'larda (s_OpenTrigger, s_ActiveTrigger vb.) dökümana uygun prefix kullanıldı.|
-| k\_ prefix (private const)  | [x] / [ ] |Proje genelinde sabit değerler (const) için k_ standartlarına sadık kalındı.|
-| Region kullanımı            | [x] / [ ] |Kodun okunabilirliğini artırmak amacıyla tüm sınıflar mantıksal bölümlere (Fields, Unity Methods, Methods vb.) ayrıldı.|
-| Region sırası doğru         | [x] / [ ] |Dökümandaki standart sıralama (Fields -> Unity Methods -> Methods -> Interface Methods) titizlikle uygulandı.|
-| XML documentation           | [x] / [ ] |Public API'ler, Interface metotları ve kritik sınıflar için <summary> açıklamaları eklendi.|
-| Silent bypass yok           | [x] / [ ] |Hatalar sessizce geçilmek yerine (Örn: Envanter dolu olması, referans eksikliği) Debug.LogWarning ve Debug.LogError ile raporlandı.|
-| Explicit interface impl.    | [x] / [ ] |IInteractable arayüzü, temiz kod prensibi gereği tüm sınıflarda "explicit" (belirgin) olarak uygulandı.|
+| Kural                       | Uygulandı | Notlar                                                                                                                              |
+| --------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| m\_ prefix (private fields) | [x] / [ ] | Tüm sınıflarda (Door, InventoryManager, PlayerMovement vb.) private instance field'lar için tutarlı şekilde uygulandı.              |
+| s\_ prefix (private static) | [x] / [ ] | Animator hash değerleri gibi static field'larda (s_OpenTrigger, s_ActiveTrigger vb.) dökümana uygun prefix kullanıldı.              |
+| k\_ prefix (private const)  | [x] / [ ] | Proje genelinde sabit değerler (const) için k\_ standartlarına sadık kalındı.                                                       |
+| Region kullanımı            | [x] / [ ] | Kodun okunabilirliğini artırmak amacıyla tüm sınıflar mantıksal bölümlere (Fields, Unity Methods, Methods vb.) ayrıldı.             |
+| Region sırası doğru         | [x] / [ ] | Dökümandaki standart sıralama (Fields -> Unity Methods -> Methods -> Interface Methods) titizlikle uygulandı.                       |
+| XML documentation           | [x] / [ ] | Public API'ler, Interface metotları ve kritik sınıflar için <summary> açıklamaları eklendi.                                         |
+| Silent bypass yok           | [x] / [ ] | Hatalar sessizce geçilmek yerine (Örn: Envanter dolu olması, referans eksikliği) Debug.LogWarning ve Debug.LogError ile raporlandı. |
+| Explicit interface impl.    | [x] / [ ] | IInteractable arayüzü, temiz kod prensibi gereği tüm sınıflarda "explicit" (belirgin) olarak uygulandı.                             |
 
 ### Naming Convention
 
-| Kural                 | Uygulandı | Örnekler        |
-| --------------------- | --------- | --------------- |
-| P\_ prefix (Prefab)   | [x] / [ ] |P_Door, P_Chest, P_Switch gibi tüm prefablar dökümanda istenen P_ ön ekine sahiptir.|
-| M\_ prefix (Material) | [x] / [ ] | Materyaller M_Door_02.mat örneğinde olduğu gibi M_ ön eki ve PascalCase kuralıyla isimlendirilmiştir.|
-| T\_ prefix (Texture)  | [ ] / [x] | Projede harici texture kullanılmadığı için bu kural bypass edilmiştir.|
-| SO isimlendirme       | [x] / [ ] |ScriptableObject asset dosyaları SO_Key_Red_01 ve SO_Key_Blue_01 şeklinde, dökümanda belirtilen SO_ prefix'i ve numara sistemiyle (_01) oluşturulmuştur.|
+| Kural                 | Uygulandı | Örnekler                                                                                                                                                  |
+| --------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P\_ prefix (Prefab)   | [x] / [ ] | P*Door, P_Chest, P_Switch gibi tüm prefablar dökümanda istenen P* ön ekine sahiptir.                                                                      |
+| M\_ prefix (Material) | [x] / [ ] | Materyaller M*Door_02.mat örneğinde olduğu gibi M* ön eki ve PascalCase kuralıyla isimlendirilmiştir.                                                     |
+| T\_ prefix (Texture)  | [ ] / [x] | Projede harici texture kullanılmadığı için bu kural bypass edilmiştir.                                                                                    |
+| SO isimlendirme       | [x] / [ ] | ScriptableObject asset dosyaları SO*Key_Red_01 ve SO_Key_Blue_01 şeklinde, dökümanda belirtilen SO* prefix'i ve numara sistemiyle (\_01) oluşturulmuştur. |
 
 ### Prefab Kuralları
 
@@ -268,8 +301,7 @@ Dökümantasyon Derinliği: PROMPTS.md dosyasında LLM kullanımını şeffaf bi
 
 Explicit Interface Implementation Adaptasyonu: Alışılagelmiş "Implicit" kullanım yerine, dökümanda istenen "Explicit" arayüz uygulamasını tüm etkileşimli nesnelere (Door, Key, Chest, Lever) entegre ederken, bu metotların sadece interface referansı üzerinden erişilebilir olması başlangıçta mimari kurguyu daha dikkatli planlamamı gerektirdi.
 
-"Nice to Have" Seçimleri: Zaman kısıtı nedeniyle tüm bonus özellikleri eklemek yerine; sistemin modülerliğini kanıtlayan "Lever (Event-based)" ve "Audio Integration" gibi mimari açıdan değer katan özelliklere odaklanmayı tercih ettim.
----
+## "Nice to Have" Seçimleri: Zaman kısıtı nedeniyle tüm bonus özellikleri eklemek yerine; sistemin modülerliğini kanıtlayan "Lever (Event-based)" ve "Audio Integration" gibi mimari açıdan değer katan özelliklere odaklanmayı tercih ettim.
 
 ## Tamamlanan Özellikler
 
@@ -303,9 +335,9 @@ Explicit Interface Implementation Adaptasyonu: Alışılagelmiş "Implicit" kull
 
 ### Bonus (Nice to Have)
 
-- [X] Animation entegrasyonu
+- [x] Animation entegrasyonu
 - [-] Sound effects
-- [X] Multiple keys / color-coded
+- [x] Multiple keys / color-coded
 - [ ] Interaction highlight
 - [ ] Save/Load states
 - [ ] Chained interactions
@@ -317,7 +349,7 @@ Explicit Interface Implementation Adaptasyonu: Alışılagelmiş "Implicit" kull
 ### Tamamlanamayan Özellikler
 
 Tamamlanamayan Özellikler
-12 saatlik süre zarfında öncelik; "Zorunlu Gereksinimler"in eksiksiz tamamlanmasına ve projenin Ludu Arts teknik standartlarına (Explicit Interface, XML Documentation, m_ prefix vb.) tam uyumlu hale getirilmesine verilmiştir. Bu nedenle aşağıdaki "Bonus" özellikler zaman yetersizliği nedeniyle tamamlanamamıştır:
+12 saatlik süre zarfında öncelik; "Zorunlu Gereksinimler"in eksiksiz tamamlanmasına ve projenin Ludu Arts teknik standartlarına (Explicit Interface, XML Documentation, m\_ prefix vb.) tam uyumlu hale getirilmesine verilmiştir. Bu nedenle aşağıdaki "Bonus" özellikler zaman yetersizliği nedeniyle tamamlanamamıştır:
 
 Kapsamlı Ses Entegrasyonu (Sound Effects): AudioManager altyapısı ve Singleton yapısı kurulmuş olsa da, tüm etkileşim anları (kapı açılma gıcırtısı, anahtar takılma sesi vb.) için ses varyasyonlarının tam entegrasyonu zaman kısıtı nedeniyle yetiştirilememiştir.
 
@@ -329,14 +361,12 @@ Interaction Highlight (Görsel Vurgulama): Oyuncu bir nesneye baktığında nesn
 
 1. [Bilinen Bug Mevcut Değildir]
 
-
 ### İyileştirme Önerileri
 
 1. [Assets] - [Daha iyi assetler kullanıp görsel açıdan iyileştirilebilir]
 2. [Sadelik] - [12 saatte yetiştirmeye çabaladığım için sadece bir level üzerinde çalıştım]
 
 ---
-
 
 ## Dosya Yapısı
 
@@ -425,12 +455,12 @@ Interaction Highlight (Görsel Vurgulama): Oyuncu bir nesneye baktığında nesn
 
 ## İletişim
 
-| Bilgi    | Değer                 |
-| -------- | --------------------- |
-| Ad Soyad | [İbrahim Gümüşdal]              |
-| E-posta  | [ibrahimgmsdl@gmail.com]   |
-| LinkedIn | [https://www.linkedin.com/in/ibrahimgumusdal/]        |
-| GitHub   | [https://github.com/Abraham-Stinson] |
+| Bilgi    | Değer                                          |
+| -------- | ---------------------------------------------- |
+| Ad Soyad | [İbrahim Gümüşdal]                             |
+| E-posta  | [ibrahimgmsdl@gmail.com]                       |
+| LinkedIn | [https://www.linkedin.com/in/ibrahimgumusdal/] |
+| GitHub   | [https://github.com/Abraham-Stinson]           |
 
 ---
 

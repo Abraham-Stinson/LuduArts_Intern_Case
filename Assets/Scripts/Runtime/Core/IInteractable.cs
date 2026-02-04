@@ -1,4 +1,4 @@
-using UnityEngine;
+using GameProject.Runtime.Player;
 namespace GameProject.Runtime.Core
 {
     /// <summary>
@@ -9,7 +9,7 @@ namespace GameProject.Runtime.Core
         /// <summary>
         /// Triggered when the player presses the interaction key.
         /// </summary>
-        void Interact();
+        void Interact(InventoryManager inventory);
 
         /// <summary>
         /// Returns the interaction text to be displayed on the UI (Ex: "Open Door").

@@ -2,6 +2,8 @@ using GameProject.Runtime.Core;
 using GameProject.Runtime.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using GameProject.Runtime.Player;
+
 
 namespace GameProject.Runtime
 {
@@ -12,6 +14,8 @@ namespace GameProject.Runtime
     public class InteractionDetector : MonoBehaviour
     {
         #region Fields
+        [Header("Reference")]
+        [SerializeField] private InventoryManager m_LocalInventory;
         [Header("Interaction")]
         [SerializeField] private Transform m_CameraTransform;
         [SerializeField, Range(1f, 10f)] private float m_InteractionRange = 3f;
@@ -85,7 +89,7 @@ namespace GameProject.Runtime
                 {
                     if (m_InteractInputReference.action.WasPressedThisFrame())
                     {
-                        m_CurrentInteractable.Interact();
+                        m_CurrentInteractable.Interact(m_LocalInventory);
                     }
                 }
                 else
@@ -98,7 +102,7 @@ namespace GameProject.Runtime
                     UIManager.Instance.UpdateProgressBar(progress);
                     if (m_CurrentHoldTimer >= requiredTime)
                     {
-                        m_CurrentInteractable.Interact();
+                        m_CurrentInteractable.Interact(m_LocalInventory);
                         m_CurrentHoldTimer = 0f;
                         UIManager.Instance.HideProgressBar();
                     }

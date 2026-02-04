@@ -3,8 +3,7 @@ using GameProject.Runtime.Data;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using GameProject.Runtime.UI;
-using GameProject.Runtime.Data;
-using System;
+using GameProject.Runtime.Audio;
 
 namespace GameProject.Runtime.Player
 {
@@ -25,6 +24,8 @@ namespace GameProject.Runtime.Player
 
         [Header("UI References")]
         [SerializeField] private InventoryUI m_InventoryUI;
+        [SerializeField] private AudioClip m_ItemPickUp;
+        [SerializeField] private AudioClip m_ItemPutDown;
 
         //Inventory
         private List<ItemData> m_InventorySlots = new List<ItemData>();
@@ -74,6 +75,7 @@ namespace GameProject.Runtime.Player
             }
 
             m_InventorySlots.Add(item);
+            AudioManager.Instance.PlaySFX(m_ItemPickUp);
 
             if (m_InventoryUI != null)
             {
@@ -107,6 +109,7 @@ namespace GameProject.Runtime.Player
             if (GetSelectedItem() != null)
             {
                 m_InventorySlots.RemoveAt(m_CurrentInventorySlotIndex);
+                AudioManager.Instance.PlaySFX(m_ItemPutDown);
 
                 if (m_CurrentInventorySlotIndex >= m_InventorySlots.Count)
                 {

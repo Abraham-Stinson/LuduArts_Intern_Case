@@ -2,6 +2,7 @@ using GameProject.Runtime.Core;
 using GameProject.Runtime.Player;
 using GameProject.Runtime.Data;
 using UnityEngine;
+
 namespace GameProject.Runtime.Interactables
 {
     public class Chest : MonoBehaviour, IInteractable
@@ -17,6 +18,8 @@ namespace GameProject.Runtime.Interactables
 
         private Animator m_Animator;
         private static readonly int s_OpenTrigger = Animator.StringToHash("Open");
+        [Header("Audio")]
+        [SerializeField] private AudioClip m_OpenSFX;
         #endregion
 
         #region Unity Methods
@@ -29,14 +32,14 @@ namespace GameProject.Runtime.Interactables
 
 
         #region Methods
-        private void OpenChest()
+        private void OpenChest(InventoryManager inventory)
         {
             m_IsOpened = true;
             m_Animator.SetTrigger(s_OpenTrigger);
 
+
             if (m_ItemToGive != null)
             {
-                InventoryManager inventory = FindObjectOfType<InventoryManager>();
                 if (inventory != null)
                 {
                     inventory.AddItem(m_ItemToGive);
@@ -46,14 +49,14 @@ namespace GameProject.Runtime.Interactables
         #endregion
 
         #region Interface Methods
-        void IInteractable.Interact()
+        void IInteractable.Interact(InventoryManager inventory)
         {
             if (m_IsOpened)
             {
                 return;
             }
 
-            OpenChest();
+            OpenChest(inventory);
         }
         string IInteractable.GetInteractionPrompt()
         {

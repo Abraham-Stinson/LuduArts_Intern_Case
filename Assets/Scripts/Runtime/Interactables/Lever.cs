@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.Events;
 using GameProject.Runtime.Core;
+using GameProject.Runtime.Player;
+using GameProject.Runtime.Audio;
 
 namespace GameProject.Runtime.Interactables
 {
@@ -23,6 +25,9 @@ namespace GameProject.Runtime.Interactables
         private Animator m_Animator;
         private static readonly int s_ActiveTrigger = Animator.StringToHash("Active");
         private static readonly int s_DeactiveTrigger = Animator.StringToHash("Deactive");
+        [Header("Audio")]
+        [SerializeField] private AudioClip m_SwitchOn;
+        [SerializeField] private AudioClip m_SwitchOff;
 
         #endregion
 
@@ -34,7 +39,7 @@ namespace GameProject.Runtime.Interactables
         #endregion
 
         #region Interface Methods
-        void IInteractable.Interact()
+        void IInteractable.Interact(InventoryManager inventory)
         {
             m_IsSwitchOn = !m_IsSwitchOn;
 
@@ -42,11 +47,13 @@ namespace GameProject.Runtime.Interactables
             {
                 m_Animator.SetTrigger(s_ActiveTrigger);
                 m_OnLeverActivated?.Invoke();
+                AudioManager.Instance.PlaySFX(m_SwitchOn);
             }
             else //Switch off
             {
                 m_Animator.SetTrigger(s_DeactiveTrigger);
                 m_OnLeverDeactivated?.Invoke();
+                AudioManager.Instance.PlaySFX(m_SwitchOff);
             }
 
         }
